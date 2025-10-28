@@ -44,6 +44,9 @@ final readonly class S3StorageBridge
             throw new \InvalidArgumentException('Invalid storage configuration: missing options array');
         }
 
-        return new S3Storage($config->options);
+        /** @var array<string, string> $options */
+        $options = $config->options;
+
+        return new S3Storage($options);
     }
 }

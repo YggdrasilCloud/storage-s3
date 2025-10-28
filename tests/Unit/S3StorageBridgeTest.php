@@ -32,6 +32,7 @@ final class S3StorageBridgeTest extends TestCase
     public function testCreateReturnsS3StorageInstance(): void
     {
         $config = new class () {
+            /** @var array<string, string> */
             public array $options = [
                 'bucket' => 'test-bucket',
                 'region' => 'eu-west-1',

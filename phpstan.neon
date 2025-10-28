@@ -4,8 +4,3 @@ parameters:
         - src
         - tests
     tmpDir: var/cache/phpstan
-    ignoreErrors:
-        # Anonymous class used for StoredObject compatibility
-        - '#Access to an undefined property object::\$key#'
-        - '#Access to an undefined property object::\$adapter#'
-        - '#Access to an undefined property object::\$storedAt#'
