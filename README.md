@@ -139,46 +139,43 @@ For public read access (not recommended for most use cases):
 ### Setup
 
 ```bash
-# Build and start containers
-docker compose up -d
-
-# Install dependencies
-docker compose exec app composer install
+# Install dependencies (runs in ephemeral container)
+docker compose run --rm app composer install
 ```
 
 ### Quick Commands
 
 ```bash
 # Run all quality checks + tests
-docker compose exec app composer all
+docker compose run --rm app composer all
 
 # Run code quality checks only (cs-fixer + phpstan)
-docker compose exec app composer qual
+docker compose run --rm app composer qual
 
 # Run CI checks (lint + cs-fixer + phpstan + tests)
-docker compose exec app composer ci
+docker compose run --rm app composer ci
 ```
 
 ### Individual Tools
 
 ```bash
 # PHP Lint
-docker compose exec app composer lint
+docker compose run --rm app composer lint
 
 # Code style (fix)
-docker compose exec app composer cs:fix
+docker compose run --rm app composer cs:fix
 
 # Code style (check)
-docker compose exec app composer cs:check
+docker compose run --rm app composer cs:check
 
 # Static analysis (PHPStan level 9)
-docker compose exec app composer stan
+docker compose run --rm app composer stan
 
 # Unit tests
-docker compose exec app composer test
+docker compose run --rm app composer test
 
 # Mutation testing (Infection)
-docker compose exec app composer infection
+docker compose run --rm app composer infection
 ```
 
 ### Without Docker (Not Recommended)
