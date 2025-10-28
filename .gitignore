@@ -33,3 +33,6 @@ infection-summary.log
 *.swo
 *~
 .DS_Store
+
+# Docker
+.env.local
