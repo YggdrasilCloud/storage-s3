@@ -1,0 +1,9 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    # Auto-discover S3 storage bridge
+    YggdrasilCloud\StorageS3\S3StorageBridge:
+        tags:
+            - { name: 'storage.bridge' }
