@@ -50,6 +50,25 @@ STORAGE_DSN=storage://s3?bucket=my-bucket&region=eu-west-1&prefix=photos/
 - `prefix`: Key prefix for all stored files (e.g., `photos/`)
 - `url_expiration`: Presigned URL expiration time in seconds (default: `3600` = 1 hour)
 
+### MinIO (Local Development & Self-Hosting)
+
+MinIO is an open-source S3-compatible object storage server perfect for:
+- **Local development**: Test S3 integration without AWS costs
+- **Self-hosting**: Run your own S3-compatible storage on-premises
+- **CI/CD**: Integration tests with real S3 API
+
+**Development setup**:
+```env
+STORAGE_DSN=storage://s3?bucket=my-bucket&region=us-east-1&endpoint=http://localhost:9000&key=minioadmin&secret=minioadmin
+```
+
+**Production self-hosting**:
+```env
+STORAGE_DSN=storage://s3?bucket=photos&region=us-east-1&endpoint=https://minio.example.com&key=YOUR_KEY&secret=YOUR_SECRET
+```
+
+MinIO is included in `compose.yaml` for local development. See [Development & Testing](#development--testing) section.
+
 ### AWS Credentials
 
 The adapter supports multiple authentication methods:
@@ -139,8 +158,31 @@ For public read access (not recommended for most use cases):
 ### Setup
 
 ```bash
+# Start MinIO (S3-compatible local storage)
+docker compose up -d minio
+
 # Install dependencies (runs in ephemeral container)
 docker compose run --rm app composer install
+```
+
+### Local S3 Testing with MinIO
+
+MinIO is included in the Docker setup for local development and testing.
+
+**Access MinIO Console**: http://localhost:9001
+- Username: `minioadmin`
+- Password: `minioadmin`
+
+**Test configuration** (`.env.test`):
+```env
+STORAGE_DSN=storage://s3?bucket=test-bucket&region=us-east-1&endpoint=http://minio:9000&key=minioadmin&secret=minioadmin
+```
+
+**Create test bucket** (via MinIO Console or mc CLI):
+```bash
+# Using mc CLI inside MinIO container
+docker compose exec minio mc alias set local http://localhost:9000 minioadmin minioadmin
+docker compose exec minio mc mb local/test-bucket
 ```
 
 ### Quick Commands
