@@ -5,7 +5,7 @@ grumphp:
 
     environment:
         variables:
-            EXEC_GRUMPHP_COMMAND: 'docker compose exec app'
+            EXEC_GRUMPHP_COMMAND: 'docker compose run --rm app'
 
     tasks:
         phplint:
