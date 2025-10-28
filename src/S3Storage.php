@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace YggdrasilCloud\StorageS3;
 
 use Aws\S3\S3Client;
-use DateTimeImmutable;
-use InvalidArgumentException;
-use RuntimeException;
 
 /**
  * Amazon S3 storage adapter.
@@ -40,11 +37,11 @@ final readonly class S3Storage
     {
         // Validate required options
         if (!isset($options['bucket'])) {
-            throw new InvalidArgumentException('Missing required option: bucket');
+            throw new \InvalidArgumentException('Missing required option: bucket');
         }
 
         if (!isset($options['region'])) {
-            throw new InvalidArgumentException('Missing required option: region');
+            throw new \InvalidArgumentException('Missing required option: region');
         }
 
         $this->bucket = $options['bucket'];
@@ -84,13 +81,13 @@ final readonly class S3Storage
      *
      * @return object Metadata about the stored file (StoredObject compatible)
      *
-     * @throws InvalidArgumentException If stream is invalid
-     * @throws RuntimeException         If S3 upload fails
+     * @throws \InvalidArgumentException If stream is invalid
+     * @throws \RuntimeException         If S3 upload fails
      */
     public function save($stream, string $key, string $mimeType, int $sizeInBytes): object
     {
         if (!\is_resource($stream)) {
-            throw new InvalidArgumentException('Stream must be a valid resource');
+            throw new \InvalidArgumentException('Stream must be a valid resource');
         }
 
         $fullKey = $this->buildKey($key);
@@ -105,18 +102,16 @@ final readonly class S3Storage
             ]);
 
             // Return StoredObject-compatible anonymous object
-            return new class($key, 's3', new DateTimeImmutable()) {
+            return new class ($key, 's3', new \DateTimeImmutable()) {
                 public function __construct(
                     public string $key,
                     public string $adapter,
-                    public DateTimeImmutable $storedAt,
-                ) {}
+                    public \DateTimeImmutable $storedAt,
+                ) {
+                }
             };
         } catch (\Throwable $e) {
-            throw new RuntimeException(
-                sprintf('Failed to upload file to S3: %s', $e->getMessage()),
-                previous: $e
-            );
+            throw new \RuntimeException(sprintf('Failed to upload file to S3: %s', $e->getMessage()), previous: $e);
         }
     }
 
@@ -127,7 +122,7 @@ final readonly class S3Storage
      *
      * @return resource File stream
      *
-     * @throws RuntimeException If file does not exist or cannot be read
+     * @throws \RuntimeException If file does not exist or cannot be read
      */
     public function readStream(string $key)
     {
@@ -142,19 +137,16 @@ final readonly class S3Storage
             $body = $result['Body'];
 
             if (!$body instanceof \Psr\Http\Message\StreamInterface) {
-                throw new RuntimeException('S3 response body is not a stream');
+                throw new \RuntimeException('S3 response body is not a stream');
             }
 
             return $body->detach();
         } catch (\Aws\S3\Exception\S3Exception $e) {
-            if ($e->getStatusCode() === 404) {
-                throw new RuntimeException(sprintf('File not found in S3: %s', $key), previous: $e);
+            if (404 === $e->getStatusCode()) {
+                throw new \RuntimeException(sprintf('File not found in S3: %s', $key), previous: $e);
             }
 
-            throw new RuntimeException(
-                sprintf('Failed to read file from S3: %s', $e->getMessage()),
-                previous: $e
-            );
+            throw new \RuntimeException(sprintf('Failed to read file from S3: %s', $e->getMessage()), previous: $e);
         }
     }
 
@@ -163,7 +155,7 @@ final readonly class S3Storage
      *
      * @param string $key Storage key identifying the file
      *
-     * @throws RuntimeException If deletion fails
+     * @throws \RuntimeException If deletion fails
      */
     public function delete(string $key): void
     {
@@ -175,10 +167,7 @@ final readonly class S3Storage
                 'Key' => $fullKey,
             ]);
         } catch (\Throwable $e) {
-            throw new RuntimeException(
-                sprintf('Failed to delete file from S3: %s', $e->getMessage()),
-                previous: $e
-            );
+            throw new \RuntimeException(sprintf('Failed to delete file from S3: %s', $e->getMessage()), previous: $e);
         }
     }
 
@@ -225,10 +214,10 @@ final readonly class S3Storage
      */
     private function buildKey(string $key): string
     {
-        if ($this->prefix === null) {
+        if (null === $this->prefix) {
             return $key;
         }
 
-        return rtrim($this->prefix, '/') . '/' . ltrim($key, '/');
+        return rtrim($this->prefix, '/').'/'.ltrim($key, '/');
     }
 }

@@ -25,7 +25,7 @@ final readonly class S3StorageBridge
      */
     public function supports(string $driver): bool
     {
-        return $driver === 's3';
+        return 's3' === $driver;
     }
 
     /**

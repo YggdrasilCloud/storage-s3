@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace YggdrasilCloud\StorageS3\Tests\Unit;
 
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use YggdrasilCloud\StorageS3\S3Storage;
 
@@ -12,7 +11,7 @@ final class S3StorageTest extends TestCase
 {
     public function testConstructorRequiresBucket(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Missing required option: bucket');
 
         new S3Storage([
@@ -22,7 +21,7 @@ final class S3StorageTest extends TestCase
 
     public function testConstructorRequiresRegion(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Missing required option: region');
 
         new S3Storage([
@@ -62,7 +61,7 @@ final class S3StorageTest extends TestCase
             'region' => 'eu-west-1',
         ]);
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Stream must be a valid resource');
 
         $storage->save('not-a-stream', 'test.txt', 'text/plain', 100);
