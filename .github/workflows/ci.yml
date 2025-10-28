@@ -83,6 +83,7 @@ jobs:
         run: |
           vendor/bin/infection \
             --test-framework=phpunit \
+            --test-framework-options='--testsuite=Unit' \
             --threads=4 \
             --logger-github \
             --only-covering-test-cases
