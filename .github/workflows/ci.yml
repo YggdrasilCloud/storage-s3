@@ -54,6 +54,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Start MinIO
+        run: |
+          docker run -d \
+            --name minio \
+            -p 9000:9000 \
+            -e MINIO_ROOT_USER=minioadmin \
+            -e MINIO_ROOT_PASSWORD=minioadmin \
+            minio/minio server /data
+
+          # Wait for MinIO to be ready
+          timeout 30 bash -c 'until docker exec minio mc alias set local http://localhost:9000 minioadmin minioadmin 2>/dev/null; do sleep 1; done'
+
+          # Create test bucket
+          docker exec minio mc mb local/test-bucket
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -78,6 +93,8 @@ jobs:
 
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
+        env:
+          S3_ENDPOINT: http://localhost:9000
 
       - name: Run Infection mutation testing
         run: |
@@ -87,4 +104,5 @@ jobs:
             --logger-github \
             --only-covering-test-cases
         env:
+          S3_ENDPOINT: http://localhost:9000
           INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
