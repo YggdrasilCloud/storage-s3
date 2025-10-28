@@ -134,42 +134,60 @@ For public read access (not recommended for most use cases):
 
 ## Development & Testing
 
+**IMPORTANT**: All commands must be run via Docker Compose to ensure PHP 8.4 compatibility.
+
+### Setup
+
+```bash
+# Build and start containers
+docker compose up -d
+
+# Install dependencies
+docker compose exec app composer install
+```
+
 ### Quick Commands
 
 ```bash
-# Install dependencies
-composer install
-
 # Run all quality checks + tests
-composer all
+docker compose exec app composer all
 
 # Run code quality checks only (cs-fixer + phpstan)
-composer qual
+docker compose exec app composer qual
 
 # Run CI checks (lint + cs-fixer + phpstan + tests)
-composer ci
+docker compose exec app composer ci
 ```
 
 ### Individual Tools
 
 ```bash
 # PHP Lint
-composer lint
+docker compose exec app composer lint
 
 # Code style (fix)
-composer cs:fix
+docker compose exec app composer cs:fix
 
 # Code style (check)
-composer cs:check
+docker compose exec app composer cs:check
 
 # Static analysis (PHPStan level 9)
-composer stan
+docker compose exec app composer stan
 
 # Unit tests
-composer test
+docker compose exec app composer test
 
 # Mutation testing (Infection)
-composer infection
+docker compose exec app composer infection
+```
+
+### Without Docker (Not Recommended)
+
+If you have PHP 8.4 installed locally, you can run commands directly:
+
+```bash
+composer install
+composer all
 ```
 
 ### Git Hooks (GrumPHP)

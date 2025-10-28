@@ -3,6 +3,10 @@ grumphp:
     hide_circumvention_tip: true
     process_timeout: 300
 
+    environment:
+        variables:
+            EXEC_GRUMPHP_COMMAND: 'docker compose exec app'
+
     tasks:
         phplint:
             jobs: 10
