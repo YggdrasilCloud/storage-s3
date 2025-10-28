@@ -10,6 +10,9 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.89",
+        "infection/infection": "^0.31",
+        "php-parallel-lint/php-parallel-lint": "^1.4",
+        "phpro/grumphp": "^2.17",
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^12.4",
         "symfony/phpunit-bridge": "^7.3"
@@ -27,8 +30,35 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "symfony/runtime": true
+            "symfony/runtime": true,
+            "phpro/grumphp": true,
+            "infection/extension-installer": true
         }
+    },
+    "scripts": {
+        "lint": "parallel-lint --colors src tests",
+        "cs:fix": "php-cs-fixer fix",
+        "cs:check": "php-cs-fixer fix --dry-run --diff",
+        "stan": "phpstan analyse --memory-limit=1G",
+        "test": "phpunit --no-coverage",
+        "infection": "infection --threads=4",
+        "qual": [
+            "@cs:check",
+            "@stan"
+        ],
+        "ci": [
+            "@lint",
+            "@cs:check",
+            "@stan",
+            "@test"
+        ],
+        "all": [
+            "@lint",
+            "@cs:check",
+            "@stan",
+            "@test",
+            "@infection"
+        ]
     },
     "minimum-stability": "stable",
     "prefer-stable": true

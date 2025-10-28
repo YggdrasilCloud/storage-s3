@@ -132,21 +132,56 @@ For public read access (not recommended for most use cases):
 - YggdrasilCloud Core
 - AWS SDK for PHP 3.x
 
-## Testing
+## Development & Testing
+
+### Quick Commands
 
 ```bash
 # Install dependencies
 composer install
 
-# Run tests
-vendor/bin/phpunit
+# Run all quality checks + tests
+composer all
 
-# Run static analysis
-vendor/bin/phpstan analyse
+# Run code quality checks only (cs-fixer + phpstan)
+composer qual
 
-# Run code style checks
-vendor/bin/php-cs-fixer fix --dry-run --diff
+# Run CI checks (lint + cs-fixer + phpstan + tests)
+composer ci
 ```
+
+### Individual Tools
+
+```bash
+# PHP Lint
+composer lint
+
+# Code style (fix)
+composer cs:fix
+
+# Code style (check)
+composer cs:check
+
+# Static analysis (PHPStan level 9)
+composer stan
+
+# Unit tests
+composer test
+
+# Mutation testing (Infection)
+composer infection
+```
+
+### Git Hooks (GrumPHP)
+
+GrumPHP automatically runs quality checks on every commit:
+- PHP Lint
+- PHP CS Fixer
+- PHPStan
+- PHPUnit tests
+- Infection mutation testing
+
+Hooks are automatically installed after `composer install`.
 
 ## License
 
