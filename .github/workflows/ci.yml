@@ -79,17 +79,6 @@ jobs:
       - name: Run Unit Tests
         run: vendor/bin/phpunit --testsuite=Unit --testdox --coverage-text --coverage-clover=coverage.xml
 
-      - name: Run Infection mutation testing
-        run: |
-          vendor/bin/infection \
-            --test-framework=phpunit \
-            --test-framework-options='--testsuite=Unit' \
-            --threads=4 \
-            --logger-github \
-            --only-covering-test-cases
-        env:
-          INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
-
   functional-tests:
     name: Functional Tests
     runs-on: ubuntu-latest
@@ -139,3 +128,59 @@ jobs:
         run: vendor/bin/phpunit --testsuite=Functional --testdox
         env:
           S3_ENDPOINT: http://localhost:9000
+
+  mutation-testing:
+    name: Mutation Testing
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Start MinIO
+        run: |
+          docker run -d \
+            --name minio \
+            -p 9000:9000 \
+            -e MINIO_ROOT_USER=minioadmin \
+            -e MINIO_ROOT_PASSWORD=minioadmin \
+            minio/minio server /data
+
+          # Wait for MinIO to be ready
+          timeout 30 bash -c 'until docker exec minio mc alias set local http://localhost:9000 minioadmin minioadmin 2>/dev/null; do sleep 1; done'
+
+          # Create test bucket
+          docker exec minio mc mb local/test-bucket
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, xml, ctype, iconv, intl
+          coverage: xdebug
+          tools: composer:v2
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Run Infection mutation testing
+        run: |
+          vendor/bin/infection \
+            --test-framework=phpunit \
+            --threads=4 \
+            --logger-github \
+            --only-covering-test-cases
+        env:
+          S3_ENDPOINT: http://localhost:9000
+          INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
