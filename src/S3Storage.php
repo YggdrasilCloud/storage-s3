@@ -140,7 +140,13 @@ final readonly class S3Storage
                 throw new \RuntimeException('S3 response body is not a stream');
             }
 
-            return $body->detach();
+            $stream = $body->detach();
+
+            if (null === $stream) {
+                throw new \RuntimeException('Failed to detach stream from S3 response');
+            }
+
+            return $stream;
         } catch (\Aws\S3\Exception\S3Exception $e) {
             if (404 === $e->getStatusCode()) {
                 throw new \RuntimeException(sprintf('File not found in S3: %s', $key), previous: $e);

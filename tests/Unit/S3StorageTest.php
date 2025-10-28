@@ -64,6 +64,7 @@ final class S3StorageTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Stream must be a valid resource');
 
+        // @phpstan-ignore argument.type (intentionally testing invalid input)
         $storage->save('not-a-stream', 'test.txt', 'text/plain', 100);
     }
 }
