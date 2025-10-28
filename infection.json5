@@ -1,0 +1,25 @@
+{
+    "$schema": "vendor/infection/infection/resources/schema.json",
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "logs": {
+        "text": "infection.log",
+        "summary": "infection-summary.log"
+    },
+    "tmpDir": "var/cache/infection",
+    "phpUnit": {
+        "configDir": ".",
+        "customPath": "vendor/bin/phpunit"
+    },
+    "testFramework": "phpunit",
+    // Target MSI: 80% (realistic for a library with external dependencies like AWS SDK)
+    "minMsi": 80,
+    "minCoveredMsi": 80,
+    "mutators": {
+        "@default": true,
+        "@function_signature": false
+    }
+}

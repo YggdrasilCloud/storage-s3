@@ -22,6 +22,10 @@
 # Composer
 composer.lock
 
+# Infection
+infection.log
+infection-summary.log
+
 # IDE
 .idea/
 .vscode/

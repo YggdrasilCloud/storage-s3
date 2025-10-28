@@ -77,4 +77,14 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-interaction
 
       - name: Run PHPUnit tests
-        run: vendor/bin/phpunit --coverage-text
+        run: vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
+
+      - name: Run Infection mutation testing
+        run: |
+          vendor/bin/infection \
+            --test-framework=phpunit \
+            --threads=4 \
+            --logger-github \
+            --only-covering-test-cases
+        env:
+          INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
