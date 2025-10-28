@@ -213,8 +213,15 @@ docker compose run --rm app composer cs:check
 # Static analysis (PHPStan level 9)
 docker compose run --rm app composer stan
 
-# Unit tests
+# Unit tests only
 docker compose run --rm app composer test
+
+# Functional tests (requires MinIO running)
+docker compose up -d minio
+docker compose run --rm app vendor/bin/phpunit --testsuite=Functional
+
+# All tests (unit + functional)
+docker compose run --rm app vendor/bin/phpunit
 
 # Mutation testing (Infection)
 docker compose run --rm app composer infection
