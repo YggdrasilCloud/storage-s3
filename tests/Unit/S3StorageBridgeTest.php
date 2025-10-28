@@ -31,7 +31,7 @@ final class S3StorageBridgeTest extends TestCase
 
     public function testCreateReturnsS3StorageInstance(): void
     {
-        $config = new class {
+        $config = new class () {
             public array $options = [
                 'bucket' => 'test-bucket',
                 'region' => 'eu-west-1',
@@ -48,7 +48,7 @@ final class S3StorageBridgeTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid storage configuration');
 
-        $config = new class {
+        $config = new class () {
             public string $options = 'invalid';
         };
 
