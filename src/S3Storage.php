@@ -58,6 +58,8 @@ final readonly class S3Storage
         // Custom endpoint (for MinIO, DigitalOcean Spaces, etc.)
         if (isset($options['endpoint'])) {
             $clientConfig['endpoint'] = $options['endpoint'];
+            // Use path-style endpoint for S3-compatible services (MinIO, etc.)
+            $clientConfig['use_path_style_endpoint'] = true;
         }
 
         // Explicit credentials (optional, falls back to AWS SDK default chain)
