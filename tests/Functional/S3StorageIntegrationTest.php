@@ -22,17 +22,7 @@ final class S3StorageIntegrationTest extends TestCase
 
     protected function setUp(): void
     {
-        $endpoint = $_ENV['S3_ENDPOINT'] ?? 'http://minio:9000';
-        $region = $_ENV['S3_REGION'] ?? 'us-east-1';
-        $key = $_ENV['S3_KEY'] ?? 'minioadmin';
-        $secret = $_ENV['S3_SECRET'] ?? 'minioadmin';
-        $bucket = $_ENV['S3_BUCKET'] ?? 'test-bucket';
-
-        \assert(\is_string($endpoint));
-        \assert(\is_string($region));
-        \assert(\is_string($key));
-        \assert(\is_string($secret));
-        \assert(\is_string($bucket));
+        ['endpoint' => $endpoint, 'region' => $region, 'key' => $key, 'secret' => $secret, 'bucket' => $bucket] = $this->getS3Config();
 
         $this->bucket = $bucket;
 
@@ -172,15 +162,7 @@ final class S3StorageIntegrationTest extends TestCase
     public function testSaveWithPrefix(): void
     {
         // Create storage with prefix
-        $region = $_ENV['S3_REGION'] ?? 'us-east-1';
-        $endpoint = $_ENV['S3_ENDPOINT'] ?? 'http://minio:9000';
-        $key = $_ENV['S3_KEY'] ?? 'minioadmin';
-        $secret = $_ENV['S3_SECRET'] ?? 'minioadmin';
-
-        \assert(\is_string($region));
-        \assert(\is_string($endpoint));
-        \assert(\is_string($key));
-        \assert(\is_string($secret));
+        ['endpoint' => $endpoint, 'region' => $region, 'key' => $key, 'secret' => $secret] = $this->getS3Config();
 
         /** @var array<string, string> $storageConfig */
         $storageConfig = [
@@ -238,6 +220,28 @@ final class S3StorageIntegrationTest extends TestCase
         self::assertSame($binaryContent, $readContent);
 
         fclose($readStream);
+    }
+
+    /**
+     * Get S3 configuration from environment variables.
+     *
+     * @return array<string, string>
+     */
+    private function getS3Config(): array
+    {
+        $endpoint = $_ENV['S3_ENDPOINT'] ?? null;
+        $region = $_ENV['S3_REGION'] ?? null;
+        $key = $_ENV['S3_KEY'] ?? null;
+        $secret = $_ENV['S3_SECRET'] ?? null;
+        $bucket = $_ENV['S3_BUCKET'] ?? null;
+
+        return [
+            'endpoint' => \is_string($endpoint) ? $endpoint : 'http://minio:9000',
+            'region' => \is_string($region) ? $region : 'us-east-1',
+            'key' => \is_string($key) ? $key : 'minioadmin',
+            'secret' => \is_string($secret) ? $secret : 'minioadmin',
+            'bucket' => \is_string($bucket) ? $bucket : 'test-bucket',
+        ];
     }
 
     /**
