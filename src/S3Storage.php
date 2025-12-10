@@ -146,13 +146,13 @@ final readonly class S3Storage implements FileStorageInterface
 
             $stream = $body->detach();
 
-            if (null === $stream) {
+            if ($stream === null) {
                 throw new \RuntimeException('Failed to detach stream from S3 response');
             }
 
             return $stream;
         } catch (\Aws\S3\Exception\S3Exception $e) {
-            if (404 === $e->getStatusCode()) {
+            if ($e->getStatusCode() === 404) {
                 throw new \RuntimeException(sprintf('File not found in S3: %s', $key), previous: $e);
             }
 
@@ -224,7 +224,7 @@ final readonly class S3Storage implements FileStorageInterface
      */
     private function buildKey(string $key): string
     {
-        if (null === $this->prefix) {
+        if ($this->prefix === null) {
             return $key;
         }
 
