@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace YggdrasilCloud\StorageS3;
 
+use App\File\Domain\Model\StoredObject;
+use App\File\Domain\Port\FileStorageInterface;
 use Aws\S3\S3Client;
 
 /**
@@ -22,7 +24,7 @@ use Aws\S3\S3Client;
  * - prefix: Key prefix for all files (e.g., "photos/")
  * - url_expiration: Presigned URL expiration in seconds (default: 3600)
  */
-final readonly class S3Storage
+final readonly class S3Storage implements FileStorageInterface
 {
     private string $bucket;
     private string $region;
@@ -63,10 +65,14 @@ final readonly class S3Storage
         }
 
         // Explicit credentials (optional, falls back to AWS SDK default chain)
-        if (isset($options['key'], $options['secret'])) {
+        // Support both 'key'/'secret' and 'access_key'/'secret_key' formats
+        $accessKey = $options['key'] ?? $options['access_key'] ?? null;
+        $secretKey = $options['secret'] ?? $options['secret_key'] ?? null;
+
+        if ($accessKey !== null && $secretKey !== null) {
             $clientConfig['credentials'] = [
-                'key' => $options['key'],
-                'secret' => $options['secret'],
+                'key' => $accessKey,
+                'secret' => $secretKey,
             ];
         }
 
@@ -81,12 +87,12 @@ final readonly class S3Storage
      * @param string   $mimeType    MIME type (e.g., "image/jpeg")
      * @param int      $sizeInBytes File size in bytes
      *
-     * @return object Metadata about the stored file (StoredObject compatible)
+     * @return StoredObject Metadata about the stored file
      *
      * @throws \InvalidArgumentException If stream is invalid
      * @throws \RuntimeException         If S3 upload fails
      */
-    public function save($stream, string $key, string $mimeType, int $sizeInBytes): object
+    public function save($stream, string $key, string $mimeType, int $sizeInBytes): StoredObject
     {
         if (!\is_resource($stream)) {
             throw new \InvalidArgumentException('Stream must be a valid resource');
@@ -103,15 +109,11 @@ final readonly class S3Storage
                 'ContentLength' => $sizeInBytes,
             ]);
 
-            // Return StoredObject-compatible anonymous object
-            return new class ($key, 's3', new \DateTimeImmutable()) {
-                public function __construct(
-                    public string $key,
-                    public string $adapter,
-                    public \DateTimeImmutable $storedAt,
-                ) {
-                }
-            };
+            return new StoredObject(
+                key: $key,
+                adapter: 's3',
+                storedAt: new \DateTimeImmutable(),
+            );
         } catch (\Throwable $e) {
             throw new \RuntimeException(sprintf('Failed to upload file to S3: %s', $e->getMessage()), previous: $e);
         }
@@ -200,7 +202,7 @@ final readonly class S3Storage
      *
      * @return string Presigned S3 URL
      */
-    public function url(string $key): string
+    public function url(string $key): ?string
     {
         $fullKey = $this->buildKey($key);
 
