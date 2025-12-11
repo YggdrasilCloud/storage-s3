@@ -93,11 +93,8 @@ final class S3StorageIntegrationTest extends TestCase
         );
 
         // Verify stored object properties
-        // @phpstan-ignore property.notFound (anonymous class from S3Storage::save)
         self::assertSame('test/hello.txt', $storedObject->key);
-        // @phpstan-ignore property.notFound
         self::assertSame('s3', $storedObject->adapter);
-        // @phpstan-ignore property.notFound
         self::assertInstanceOf(\DateTimeImmutable::class, $storedObject->storedAt);
 
         // Read file back
@@ -149,7 +146,7 @@ final class S3StorageIntegrationTest extends TestCase
         $url = $this->storage->url('test/url.txt');
 
         // Verify URL is valid and not empty
-        self::assertNotEmpty($url);
+        self::assertNotNull($url);
         self::assertStringStartsWith('http', $url);
         self::assertStringContainsString($this->bucket, $url);
         self::assertStringContainsString('test/url.txt', $url);

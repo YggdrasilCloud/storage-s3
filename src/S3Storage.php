@@ -69,7 +69,7 @@ final readonly class S3Storage implements FileStorageInterface
         $accessKey = $options['key'] ?? $options['access_key'] ?? null;
         $secretKey = $options['secret'] ?? $options['secret_key'] ?? null;
 
-        if ($accessKey !== null && $secretKey !== null) {
+        if (null !== $accessKey && null !== $secretKey) {
             $clientConfig['credentials'] = [
                 'key' => $accessKey,
                 'secret' => $secretKey,
@@ -146,13 +146,13 @@ final readonly class S3Storage implements FileStorageInterface
 
             $stream = $body->detach();
 
-            if ($stream === null) {
+            if (null === $stream) {
                 throw new \RuntimeException('Failed to detach stream from S3 response');
             }
 
             return $stream;
         } catch (\Aws\S3\Exception\S3Exception $e) {
-            if ($e->getStatusCode() === 404) {
+            if (404 === $e->getStatusCode()) {
                 throw new \RuntimeException(sprintf('File not found in S3: %s', $key), previous: $e);
             }
 
@@ -200,7 +200,7 @@ final readonly class S3Storage implements FileStorageInterface
      *
      * @param string $key Storage key identifying the file
      *
-     * @return string Presigned S3 URL
+     * @return string|null Presigned S3 URL, or null if not supported
      */
     public function url(string $key): ?string
     {
@@ -224,7 +224,7 @@ final readonly class S3Storage implements FileStorageInterface
      */
     private function buildKey(string $key): string
     {
-        if ($this->prefix === null) {
+        if (null === $this->prefix) {
             return $key;
         }
 

@@ -1,0 +1,9 @@
+parameters:
+    ignoreErrors:
+        # S3Storage::url() never returns null because presigned URLs are always generated.
+        # The ?string return type is required to satisfy FileStorageInterface contract
+        # (LocalStorage returns null as it has no public URLs).
+        -
+            message: "#^Method YggdrasilCloud\\\\StorageS3\\\\S3Storage\\:\\:url\\(\\) never returns null so it can be removed from the return type\\.$#"
+            count: 1
+            path: src/S3Storage.php
