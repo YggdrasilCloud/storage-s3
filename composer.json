@@ -1,12 +1,16 @@
 {
     "name": "yggdrasilcloud/storage-s3",
     "description": "Amazon S3 storage adapter bridge for YggdrasilCloud",
-    "type": "library",
+    "type": "symfony-bundle",
     "license": "MIT",
     "require": {
         "php": "^8.4",
         "aws/aws-sdk-php": "^3.333",
-        "symfony/http-foundation": "^7.3"
+        "symfony/config": "^7.3",
+        "symfony/dependency-injection": "^7.3",
+        "symfony/http-foundation": "^7.3",
+        "symfony/http-kernel": "^7.3",
+        "yggdrasilcloud/core": "^0.7"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.89",
@@ -30,9 +34,15 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "symfony/runtime": true,
+            "infection/extension-installer": true,
             "phpro/grumphp": true,
-            "infection/extension-installer": true
+            "symfony/flex": true,
+            "symfony/runtime": true
+        }
+    },
+    "extra": {
+        "symfony": {
+            "require": "^7.3"
         }
     },
     "scripts": {
@@ -59,7 +69,5 @@
             "@test",
             "@infection"
         ]
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true
+    }
 }
