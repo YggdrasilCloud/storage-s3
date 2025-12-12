@@ -204,6 +204,10 @@ final readonly class S3Storage implements FileStorageInterface
      */
     public function url(string $key): ?string
     {
+        if (!$this->exists($key)) {
+            return null;
+        }
+
         $fullKey = $this->buildKey($key);
 
         $command = $this->client->getCommand('GetObject', [
