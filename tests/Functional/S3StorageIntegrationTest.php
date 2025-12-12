@@ -156,6 +156,13 @@ final class S3StorageIntegrationTest extends TestCase
         self::assertStringContainsString('X-Amz-Expires', $url);
     }
 
+    public function testUrlReturnsNullForNonexistentFile(): void
+    {
+        $url = $this->storage->url('test/nonexistent.txt');
+
+        self::assertNull($url);
+    }
+
     public function testSaveWithPrefix(): void
     {
         // Create storage with prefix
